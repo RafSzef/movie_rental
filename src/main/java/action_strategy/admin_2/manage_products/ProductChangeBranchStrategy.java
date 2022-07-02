@@ -1,12 +1,11 @@
 package action_strategy.admin_2.manage_products;
 
 import action_strategy.Strategy;
+import action_strategy.admin_2.manage_branches.ManageBranchesLogic;
 
 public class ProductChangeBranchStrategy implements Strategy {
     @Override
     public void algorithm() {
-        //TODO
-        System.out.println(" Product branch change method");
-        new ManageProductLogic().startAdminProductManagementPanel();
+        new ManageBranchesLogic().startAdminBranchManagementPanel();
     }
 }

@@ -19,9 +19,18 @@ public class Branch {
     @Column(length = 64)
     private String name;
 
-    @Column(name = "postal_code", length = 6, unique = true)
+    @Column(name = "postal_code", length = 6, unique = true, nullable = false)
     private String postalCode;
 
     @Column(length = 64)
     private String adres;
+
+    @Override
+    public String toString() {
+        return "Branch" +
+                "id = " + id +
+                ", name = '" + name + '\'' +
+                ", postalCode = '" + postalCode + '\'' +
+                ", adres = '" + adres + '\'';
+    }
 }

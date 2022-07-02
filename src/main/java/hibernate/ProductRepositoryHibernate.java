@@ -409,6 +409,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
 
     @Override
     public Branch addBranch(Branch branch) {
+        entityManager.getTransaction().begin();
         String postalCode = branch.getPostalCode();
         try {
             var selectSql = """
@@ -421,19 +422,19 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             Optional<Branch> existingBranch = Optional.ofNullable(query.getSingleResult());
 
             log.warn("Branch with given postal code already exists: {}", postalCode);
+            entityManager.getTransaction().commit();
             return existingBranch.get();
         } catch (NoResultException e) {
-            entityManager.getTransaction().begin();
+
             entityManager.persist(branch);
             entityManager.getTransaction().commit();
-            log.info("Branch added: {}", branch);
+            log.info("Branch added: {}", branch.getName());
             return branch;
         }
     }
 
     @Override
-    public boolean removeBranch(Branch branch) {
-        String postalCode = branch.getPostalCode();
+    public boolean removeBranch(String postalCode) {
         try {
             var selectSql = """
                     SELECT b FROM Branch b
@@ -446,13 +447,10 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             entityManager.getTransaction().begin();
             entityManager.remove(existingBranch);
             entityManager.getTransaction().commit();
-            log.info("Branch {}, {} deleted", branch.getName(), branch.getPostalCode());
+            log.info("Branch deleted");
             return true;
         } catch (NoResultException e) {
-            log.warn("Cannot delete non-existing Branch {}, {}, {}",
-                    branch.getName(),
-                    branch.getPostalCode(),
-                    branch.getAdres());
+            log.warn("Cannot delete non-existing Branch ");
             return false;
         }
     }
@@ -540,6 +538,13 @@ public class ProductRepositoryHibernate implements ProductsRepository {
         List<Product> list = getAllProducts();
         return list.stream()
                 .map(p -> p.getReleaseDate().getYear())
+                .toList();
+    }
+
+    public List<Branch> getListOfAllBranches() {
+        List<Product> list = getAllProducts();
+        return list.stream()
+                .map(Product::getBranch)
                 .toList();
     }
 }

@@ -58,7 +58,7 @@ public class MyScanner {
     }
 
     public static void pressAnyKeyToContiunue () {
-        System.out.print("\nPress any key to continue.");
+        System.out.print("Press any key to continue.");
         scanner = new Scanner(System.in);
         scanner.nextLine();
     }

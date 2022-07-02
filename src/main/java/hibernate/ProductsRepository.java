@@ -157,13 +157,7 @@ public interface ProductsRepository {
      */
     Branch addBranch(Branch branch);
 
-    /**
-     * Usuwa oddział z bazy.
-     *
-     * @param branch oddział do usunięcia.
-     * @return true - usunięty; false - brak oddziału w bazie;
-     */
-    boolean removeBranch(Branch branch);
+    boolean removeBranch(String postalCode);
 
     Optional<Branch> getBranch(Branch branch);
 
