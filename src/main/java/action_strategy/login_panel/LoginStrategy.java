@@ -4,10 +4,8 @@ import action_strategy.MyScanner;
 import action_strategy.Strategy;
 import action_strategy.StrategyCommons;
 import action_strategy.admin_defining.AdminDefiningLogic;
-import hibernate.ClientsRepositoryHibernate;
 import tables.Client;
 
-import static hibernate.ClientsRepositoryHibernate.*;
 
 public class LoginStrategy implements Strategy {
 
