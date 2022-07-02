@@ -1,12 +1,12 @@
 package hibernate;
 
+import action_strategy.StrategyCommons;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tables.Client;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import java.sql.SQLException;
 import java.util.Optional;
 
 @Slf4j
@@ -16,7 +16,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     private final EntityManager entityManager;
 
     @Override
-    public Optional<ClientBasicInfo> getClientBasicInfoById(int id) throws SQLException {
+    public Optional<ClientBasicInfo> getClientBasicInfoById(int id) {
         String selectClientBasicInfoById = """
                 select new hibernate.ClientBasicInfo(c.id, c.login, c.firstName, c.lastName)
                 from Client c
@@ -33,18 +33,18 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
             return Optional.empty();
         }
     }
+    @Override
     public Optional<Client> getClientById(int id) {
-        String selectClientBasicInfoById = """
+        try {
+            String selectClientBasicInfoById = """
                 select c
                 from Client c
                 where c.id = :id
                 """;
         var query = entityManager.createQuery(selectClientBasicInfoById, Client.class);
         query.setParameter("id", id);
-
-        try {
-            var result = query.getSingleResult();
-            return Optional.of(result);
+        var result = query.getSingleResult();
+        return Optional.of(result);
         } catch (NoResultException e) {
             log.warn("Could not find Client by provided id: {}", id);
             return Optional.empty();
@@ -52,19 +52,18 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void createClient(Client client)  {
-        //TODO powtarzający się login
+    public void createClient(Client client) {
         try {
             entityManager.getTransaction().begin();
             entityManager.persist(client);
             entityManager.getTransaction().commit();
         } catch (Exception e) {
-            System.out.println("Client with given login already in database");
+            log.warn("User already exist: {}", client);
         }
     }
 
     @Override
-    public void deleteClientById(Integer id) throws SQLException {
+    public void deleteClientById(Integer id) {
         try {
             entityManager.getTransaction().begin();
             String selectClientToRemove = "select c from Client c where c.id = :id";
@@ -79,7 +78,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void changeClientFirstName(Integer id, String newName) throws SQLException {
+    public void changeClientFirstName(Integer id, String newName) {
         try {
             entityManager.getTransaction().begin();
             String selectClientToChangeFirstName = "select c from Client c where c.id = :id";
@@ -94,7 +93,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void changeClientLastName(Integer id, String newLastName) throws SQLException {
+    public void changeClientLastName(Integer id, String newLastName) {
         try {
             entityManager.getTransaction().begin();
             String selectClientToChangeFirstName = "select c from Client c where c.id = :id";
@@ -109,7 +108,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void changeClientPhone(Integer id, String newPhoneNumber) throws SQLException {
+    public void changeClientPhone(Integer id, String newPhoneNumber) {
         try {
             entityManager.getTransaction().begin();
             String selectClientToChangeFirstName = "select c from Client c where c.id = :id";
@@ -124,7 +123,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void changeClientEmail(Integer id, String newEmail) throws SQLException {
+    public void changeClientEmail(Integer id, String newEmail) {
         try {
             entityManager.getTransaction().begin();
             String selectClientToChangeFirstName = "select c from Client c where c.id = :id";
@@ -139,7 +138,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void changeClientPostalCode(Integer id, String newPostalCode) throws SQLException {
+    public void changeClientPostalCode(Integer id, String newPostalCode) {
         try {
             entityManager.getTransaction().begin();
             String selectClientToChangeFirstName = "select c from Client c where c.id = :id";
@@ -154,7 +153,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void changeClientAddress(Integer id, String newAddress) throws SQLException {
+    public void changeClientAddress(Integer id, String newAddress) {
         try {
             entityManager.getTransaction().begin();
             String selectClientToChangeFirstName = "select c from Client c where c.id = :id";
@@ -169,7 +168,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void changeClientPassword(Integer id, String newPassword) throws SQLException {
+    public void changeClientPassword(Integer id, String newPassword) {
         try {
             entityManager.getTransaction().begin();
             String selectClientToChangeFirstName = "select c from Client c where c.id = :id";
@@ -184,7 +183,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
     }
 
     @Override
-    public void giveAdmin(Integer id) throws SQLException {
+    public void giveAdmin(Integer id) {
         try {
             entityManager.getTransaction().begin();
             String selectUserToGiveAdmin = "select c from Client c where c.id = :id";
@@ -202,9 +201,7 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
         }
     }
 
-    @Override
-    public Client authorization(String login, String password) throws SQLException {
-
+    public Client authorization(String login, String password) {
         try {
             entityManager.getTransaction().begin();
             String selectUserByLogin = "select c from Client c where c.login = :login";
