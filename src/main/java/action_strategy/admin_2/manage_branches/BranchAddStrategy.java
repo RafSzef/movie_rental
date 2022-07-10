@@ -25,7 +25,7 @@ public class BranchAddStrategy implements Strategy {
         System.out.println("Enter postal-Code:");
         newBranch.setPostalCode(MyScanner.getText());
         System.out.println("Enter address");
-        newBranch.setAdres(MyScanner.getText());
+        newBranch.setAddress(MyScanner.getText());
 
         repository.addBranch(newBranch);
 

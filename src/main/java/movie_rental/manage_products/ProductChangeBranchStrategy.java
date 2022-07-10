@@ -1,4 +1,4 @@
-package action_strategy.admin_2.manage_products;
+package movie_rental.manage_products;
 
 import action_strategy.Strategy;
 import action_strategy.admin_2.manage_branches.ManageBranchesLogic;

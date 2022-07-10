@@ -8,9 +8,13 @@ import javax.persistence.*;
 @Table(name = "branches")
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
+@AllArgsConstructor
 public class Branch {
+
+    public Branch (){
+
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,7 +27,7 @@ public class Branch {
     private String postalCode;
 
     @Column(length = 64)
-    private String adres;
+    private String address;
 
     @Override
     public String toString() {
@@ -31,6 +35,6 @@ public class Branch {
                 "id = " + id +
                 ", name = '" + name + '\'' +
                 ", postalCode = '" + postalCode + '\'' +
-                ", adres = '" + adres + '\'';
+                ", adres = '" + address + '\'';
     }
 }

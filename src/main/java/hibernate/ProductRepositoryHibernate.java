@@ -469,7 +469,24 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             return Optional.of(existingBranch);
         } catch (
                 NoResultException e) {
-            log.info("No branch {} {} {} found", branch.getName(), branch.getAdres(), branch.getPostalCode());
+            log.info("No branch {} {} {} found", branch.getName(), branch.getAddress(), branch.getPostalCode());
+            return Optional.empty();
+        }
+    }
+    @Override
+    public Optional<Branch> getBranch(String postalCode) {
+        try {
+            var selectSql = """
+                    SELECT b FROM Branch b
+                    WHERE b.postalCode =  :postalCode
+                    """;
+            var query = entityManager.createQuery(selectSql, Branch.class);
+            query.setParameter("postalCode", postalCode);
+            var existingBranch = query.getSingleResult();
+            return Optional.of(existingBranch);
+        } catch (
+                NoResultException e) {
+            log.info("No branch witch postal code {} found",postalCode);
             return Optional.empty();
         }
     }
@@ -542,9 +559,17 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     }
 
     public List<Branch> getListOfAllBranches() {
-        List<Product> list = getAllProducts();
-        return list.stream()
-                .map(Product::getBranch)
-                .toList();
+        try {
+            var selectAllProducts = """
+                    SELECT NEW tables.Branch (b.id, b.name, b.postalCode, b.address)
+                    FROM Branch b
+                    """;
+            var query = entityManager.createQuery(selectAllProducts, Branch.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No branches in database!");
+            return List.of();
+        }
+
     }
 }

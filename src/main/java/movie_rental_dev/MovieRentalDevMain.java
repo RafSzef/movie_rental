@@ -1,6 +1,5 @@
 package movie_rental_dev;
 
-import hibernate.ClientBasicInfo;
 import hibernate.ClientsRepositoryHibernate;
 import hibernate.ProductRepositoryHibernate;
 import hibernate.RentsRepositoryHibernate;
@@ -120,7 +119,7 @@ public class MovieRentalDevMain {
     static Product buildProductWithName(String name) {
         Branch branchTmp = new Branch();
         branchTmp.setName("Gdzies");
-        branchTmp.setAdres("ulica");
+        branchTmp.setAddress("ulica");
         branchTmp.setPostalCode("12-345");
         Branch branch = productRepositoryHibernate.addBranch(branchTmp);
 

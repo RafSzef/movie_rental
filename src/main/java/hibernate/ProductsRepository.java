@@ -161,6 +161,8 @@ public interface ProductsRepository {
 
     Optional<Branch> getBranch(Branch branch);
 
+    Optional<Branch> getBranch(String postalCode);
+
 
     List<Product> getListOfProductWithGivenCategory(String title);
 }
