@@ -7,28 +7,32 @@ import hibernate.ProductRepositoryHibernate;
 import tables.*;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
+import java.util.InvalidPropertiesFormatException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class ProductAddStrategy implements Strategy {
 
     ProductRepositoryHibernate REPOSITORY = StrategyCommons.getProductRepositoryHibernate();
-    EntityManager entityManager = StrategyCommons.getInstance().getEntityManager();
 
     @Override
     public void algorithm() {
-        REPOSITORY.getAllProducts().forEach(p -> entityManager.refresh(p));
-        REPOSITORY.getListOfAllBranches().forEach(p -> entityManager.refresh(p));
+
         try {
             Product newProduct = new Product();
             Category newCategory = new Category();
             PegiCategory newPegiCategory = new PegiCategory();
             Carrier newCarrier = new Carrier();
-            Branch newBranch = new Branch();
+            Director newDirector = new Director();
 
-            newBranch = getBranch(newBranch);
+            Branch newBranch;
+            newBranch = getBranch();
 
             System.out.println("Enter product title:");
             newProduct.setTitle(MyScanner.getText());
+
+            LocalDate releaseDate = enterDate();
 
             System.out.println("Enter product Category");
             newCategory.setTitle(MyScanner.getText());
@@ -40,7 +44,15 @@ public class ProductAddStrategy implements Strategy {
             newCarrier.setDescription(MyScanner.getText());
 
 
+            System.out.println("Enter Director info:");
+            System.out.println("-- First name:");
+            newDirector.setFirstName(MyScanner.getText());
+            System.out.println("-- Last name:");
+            newDirector.setLastName(MyScanner.getText());
+
+            newProduct.setReleaseDate(releaseDate);
             newProduct.setBranch(newBranch);
+            newProduct.setDirector(newDirector);
             newProduct.setCategory(newCategory);
             newProduct.setCarrier(newCarrier);
             newProduct.setPegiCategory(newPegiCategory);
@@ -52,19 +64,29 @@ public class ProductAddStrategy implements Strategy {
         }
     }
 
-    private Branch getBranch(Branch newBranch) {
-        System.out.println("Enter Product details to add new product");
+    private LocalDate enterDate() {
+        try {
+            System.out.println("Enter release date in YYYY-MM-DD format:");
+            LocalDate releaseDate = LocalDate.parse(MyScanner.getText());
+            return releaseDate;
+        } catch (Exception e ){
+            System.out.println("incorrect format.");
+            return enterDate();
+        }
+    }
 
+    private Branch getBranch() {
+        System.out.println("Enter Product details to add new product");
         System.out.println("<-- SELECT BRANCH TO ADD PRODUCT ----------->");
+
         if (REPOSITORY.getListOfAllBranches().isEmpty()) {
             System.out.println("<-- NO BRANCHES AVAILABLE. ADD NEW BRANCH ?->");
             if (MyScanner.yesOrNo()) {
-                newBranch = addBranch();
+                return addBranch();
             } else new ManageProductLogic().startAdminProductManagementPanel();
-        } else {
-            selectBranch();
         }
-        return newBranch;
+
+        return selectBranch();
     }
 
     private Branch addBranch() {
@@ -81,9 +103,14 @@ public class ProductAddStrategy implements Strategy {
     }
 
     private Optional<Branch> branchSelector() {
-        System.out.println("Enter Branch postal code:");
-        String postalCode = MyScanner.getText();
-        return Optional.of(REPOSITORY.getBranch(postalCode).get());
+        try {
+            System.out.println("Enter Branch id:");
+            Integer postalCode = MyScanner.getInt();
+            return Optional.of(REPOSITORY.getBranch(postalCode).get());
+        } catch (NoSuchElementException e) {
+            System.out.println("No such branch");
+            return branchSelector();
+        }
     }
 
     private Branch selectBranch() {
@@ -92,7 +119,10 @@ public class ProductAddStrategy implements Strategy {
                 .distinct()
                 .forEach(System.out::println);
         Optional<Branch> tmpBranch = branchSelector();
-        return tmpBranch.orElseGet(this::selectBranch);
+        if (tmpBranch.isPresent()) {
+            return tmpBranch.get();
+        } else return branchSelector().get();
+//        return tmpBranch.orElseGet(this::selectBranch);
     }
 
 }

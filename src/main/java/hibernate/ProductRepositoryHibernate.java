@@ -473,6 +473,23 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             return Optional.empty();
         }
     }
+    public Optional<Branch> getBranch(Integer branchId) {
+        try {
+            ;
+            var selectSql = """
+                    SELECT b FROM Branch b
+                    WHERE b.id =  :branchId
+                    """;
+            var query = entityManager.createQuery(selectSql, Branch.class);
+            query.setParameter("branchId", branchId);
+            var existingBranch = query.getSingleResult();
+            return Optional.of(existingBranch);
+        } catch (
+                NoResultException e) {
+            log.info("No branch with id {} found", branchId);
+            return Optional.empty();
+        }
+    }
 
     @Override
     public Optional<Branch> getBranch(String postalCode) {
