@@ -379,8 +379,8 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             entityManager.getTransaction().begin();
             entityManager.remove(existingDirector);
             entityManager.getTransaction().commit();
-            log.info("Director with id: {}, {}, {} deleted",
-                    director.getId(), director.getLastName(), director.getLastName());
+            log.info("Director with , {}, {} deleted",
+                    director.getLastName(), director.getLastName());
             return true;
         } catch (NoResultException e) {
             log.warn("Cannot delete non-existing Director {}, {}"
@@ -473,6 +473,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             return Optional.empty();
         }
     }
+
     @Override
     public Optional<Branch> getBranch(String postalCode) {
         try {
@@ -486,7 +487,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             return Optional.of(existingBranch);
         } catch (
                 NoResultException e) {
-            log.info("No branch witch postal code {} found",postalCode);
+            log.info("No branch witch postal code {} found", postalCode);
             return Optional.empty();
         }
     }
@@ -515,10 +516,17 @@ public class ProductRepositoryHibernate implements ProductsRepository {
 
 
     public List<Director> getListOfAllDirectors() {
-        List<Product> list = getAllProducts();
-        return list.stream()
-                .map(Product::getDirector)
-                .toList();
+        try {
+            var selectAllProducts = """
+                    SELECT NEW tables.Director (d.id, d.firstName, d.lastName)
+                    FROM Director d
+                    """;
+            var query = entityManager.createQuery(selectAllProducts, Director.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No directors in database!");
+            return List.of();
+        }
     }
 
     public List<Product> getListOfProductWithGivenDirectorName(String name) {
@@ -570,6 +578,5 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             log.info("No branches in database!");
             return List.of();
         }
-
     }
 }

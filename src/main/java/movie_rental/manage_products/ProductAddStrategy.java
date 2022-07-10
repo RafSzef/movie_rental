@@ -16,8 +16,8 @@ public class ProductAddStrategy implements Strategy {
 
     @Override
     public void algorithm() {
-        REPOSITORY.getAllProducts().forEach(p-> entityManager.refresh(p));
-        REPOSITORY.getListOfAllBranches().forEach(p-> entityManager.refresh(p));
+        REPOSITORY.getAllProducts().forEach(p -> entityManager.refresh(p));
+        REPOSITORY.getListOfAllBranches().forEach(p -> entityManager.refresh(p));
         try {
             Product newProduct = new Product();
             Category newCategory = new Category();
@@ -25,18 +25,7 @@ public class ProductAddStrategy implements Strategy {
             Carrier newCarrier = new Carrier();
             Branch newBranch = new Branch();
 
-            System.out.println("Enter Product details to add new product");
-            System.out.println("<-- SELECT BRANCH THEN ADD PRODUCT---------->");
-
-
-            if (REPOSITORY.getListOfAllBranches().isEmpty()) {
-                System.out.println("<-- NO BRANCHES AVAILABLE. ADD NEW BRANCH ?->");
-                if (MyScanner.yesOrNo()) {
-                    newBranch = addBranch();
-                } else new ManageProductLogic().startAdminProductManagementPanel();
-            } else {
-                selectBranch();
-            }
+            newBranch = getBranch(newBranch);
 
             System.out.println("Enter product title:");
             newProduct.setTitle(MyScanner.getText());
@@ -56,13 +45,26 @@ public class ProductAddStrategy implements Strategy {
             newProduct.setCarrier(newCarrier);
             newProduct.setPegiCategory(newPegiCategory);
             REPOSITORY.createProduct(newProduct);
-//        TODO
-//        System.out.println("Product adding method");
 
             new ManageProductLogic().startAdminProductManagementPanel();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Branch getBranch(Branch newBranch) {
+        System.out.println("Enter Product details to add new product");
+
+        System.out.println("<-- SELECT BRANCH TO ADD PRODUCT ----------->");
+        if (REPOSITORY.getListOfAllBranches().isEmpty()) {
+            System.out.println("<-- NO BRANCHES AVAILABLE. ADD NEW BRANCH ?->");
+            if (MyScanner.yesOrNo()) {
+                newBranch = addBranch();
+            } else new ManageProductLogic().startAdminProductManagementPanel();
+        } else {
+            selectBranch();
+        }
+        return newBranch;
     }
 
     private Branch addBranch() {

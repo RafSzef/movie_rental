@@ -1,27 +1,23 @@
-package action_strategy.admin_panel;
+package action_strategy.admin_2.manage_directors;
 
 import action_strategy.Context;
-import action_strategy.LogOutStrategy;
 import action_strategy.Strategy;
 import action_strategy.StrategyPicker;
+import action_strategy.admin_2.ReturnToAdminPanelStrategy;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AdminPanelContext implements Context {
+public class DirectorContext implements Context {
     @Override
     public Strategy operation(StrategyPicker strategyPicker) {
 
         switch (strategyPicker) {
             case OPTION_1:
-                return new UserOperationsStrategy();
+                return new DirectorAddStrategy();
             case OPTION_2:
-                return new ProductOperationsStrategy();
+                return new DirectorRemoveStrategy();
             case OPTION_3:
-                return new BranchesOperationsStrategy();
-            case OPTION_4:
-                return new DirectorOpertaionsStrategy();
-            case OPTION_5:
-                return new LogOutStrategy();
+                return new ReturnToAdminPanelStrategy();
             default: {
                 log.info("Wrong - enter command again");
                 return operation(StrategyPicker.getOptionFromScanner());
