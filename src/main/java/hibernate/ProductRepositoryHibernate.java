@@ -138,20 +138,18 @@ public class ProductRepositoryHibernate implements ProductsRepository {
 
     @Override
     public Optional<Product> changeProductCategory(Integer id, Category category) {
-        Optional<Product> exstingProduct = getProductById(id);
-        Category existingCategory = addCategory(category);
+        Optional<Product> existingProduct = getProductById(id);
 
         try {
             entityManager.getTransaction().begin();
-            exstingProduct.ifPresent(p -> p.setCategory(existingCategory));
+            existingProduct.ifPresent(p -> p.setCategory(category));
             entityManager.getTransaction().commit();
-
-            return exstingProduct;
+            System.out.println("Category changed in product" + existingProduct);
+            return existingProduct;
         } catch (NoSuchElementException e) {
             log.warn("No product with id {}", id);
             return Optional.empty();
         }
-
     }
 
     @Override
@@ -591,10 +589,17 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     }
 
     public List<Category> getListOfallCategories() {
-        List<Product> list = getAllActiveProducts();
-        return list.stream()
-                .map(Product::getCategory)
-                .toList();
+        try {
+            var selectAllCategpries = """
+                    SELECT NEW tables.Category (c.id, c.title)
+                    FROM Category c
+                    """;
+            var query = entityManager.createQuery(selectAllCategpries, Category.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No categories in database!");
+            return List.of();
+        }
     }
 
     public List<Carrier> getListOfAllCarerTypes() {
@@ -682,5 +687,20 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             log.info("No products in database!");
         }
         return List.of();
+    }
+
+    public Optional<Category> getCategoryById(Integer categoryId) {
+        try {
+            var selectSql = """
+                    SELECT c FROM Category c
+                    WHERE c.id = :id
+                    """;
+            var query = entityManager.createQuery(selectSql, Category.class);
+            query.setParameter("id", categoryId);
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            log.info("No Category with id {}", categoryId);
+            return Optional.empty();
+        }
     }
 }
