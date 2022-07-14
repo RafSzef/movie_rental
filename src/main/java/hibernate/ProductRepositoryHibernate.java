@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -588,7 +589,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
         }
     }
 
-    public List<Category> getListOfallCategories() {
+    public List<Category> getListOfAllCategories() {
         try {
             var selectAllCategpries = """
                     SELECT NEW tables.Category (c.id, c.title)
@@ -634,10 +635,17 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     }
 
     public List<PegiCategory> getListOfAllPegiCategories() {
-        List<Product> list = getAllActiveProducts();
-        return list.stream()
-                .map(Product::getPegiCategory)
-                .toList();
+        try {
+            var selectAllCategpries = """
+                    SELECT NEW tables.PegiCategory (c.id, c.title)
+                    FROM PegiCategory c
+                    """;
+            var query = entityManager.createQuery(selectAllCategpries, PegiCategory.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No pegi categories in database!");
+            return List.of();
+        }
     }
 
     public List<Product> getListOfProductWithGivenPegiCategory(String title) {
@@ -700,6 +708,36 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             return Optional.ofNullable(query.getSingleResult());
         } catch (NoResultException e) {
             log.info("No Category with id {}", categoryId);
+            return Optional.empty();
+        }
+    }
+
+    public Optional<PegiCategory> getPegiCategoryById(Integer categoryId) {
+        try {
+            var selectSql = """
+                    SELECT c FROM PegiCategory c
+                    WHERE c.id = :id
+                    """;
+            var query = entityManager.createQuery(selectSql, PegiCategory.class);
+            query.setParameter("id", categoryId);
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            log.info("No PEGI Category with id {}", categoryId);
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Product> changePegiProductCategory(Integer productId, PegiCategory newCategory) {
+        Optional<Product> existingProduct = getProductById(productId);
+
+        try {
+            entityManager.getTransaction().begin();
+            existingProduct.ifPresent(p -> p.setPegiCategory(newCategory));
+            entityManager.getTransaction().commit();
+            System.out.println("Category changed in product" + existingProduct);
+            return existingProduct;
+        } catch (NoSuchElementException e) {
+            log.warn("No product with id {}", productId);
             return Optional.empty();
         }
     }

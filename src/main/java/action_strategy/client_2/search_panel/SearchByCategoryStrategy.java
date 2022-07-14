@@ -15,7 +15,7 @@ public class SearchByCategoryStrategy implements Strategy {
         ProductRepositoryHibernate repository = StrategyCommons.getProductRepositoryHibernate();
         System.out.println("<------------------------------------------->");
         System.out.println("<-- LIST OF AVAILABLE CATEGORIES ----------->");
-        repository.getListOfallCategories().stream()
+        repository.getListOfAllCategories().stream()
                 .distinct()
                 .forEach(c -> System.out.println(c.getTitle()));
         System.out.println("Enter category:");

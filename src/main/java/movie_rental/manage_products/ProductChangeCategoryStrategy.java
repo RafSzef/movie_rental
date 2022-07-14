@@ -4,7 +4,6 @@ import action_strategy.MyScanner;
 import action_strategy.Strategy;
 import action_strategy.StrategyCommons;
 import hibernate.ProductRepositoryHibernate;
-import tables.Branch;
 import tables.Category;
 
 public class ProductChangeCategoryStrategy implements Strategy {
@@ -21,7 +20,7 @@ public class ProductChangeCategoryStrategy implements Strategy {
 
         System.out.println("<------------------------------------------->");
         System.out.println("<-- LIST OF AVAILABLE CATEGORIES ----------->");
-        repository.getListOfallCategories().stream()
+        repository.getListOfAllCategories().stream()
                 .distinct()
                 .forEach(System.out::println);
 
