@@ -29,10 +29,11 @@ public class ManageProductLogic {
         System.out.println("<------------------------------------------->");
         System.out.println("1. Add product");
         System.out.println("2. Remove product");
-        System.out.println("3. Change product branch");
-        System.out.println("4. Change product Category");
-        System.out.println("5. Change product PEGI Category");
-        System.out.println("6. Return to previous menu");
+        System.out.println("3. Activate removed product");
+        System.out.println("4. Change product branch");
+        System.out.println("5. Change product Category");
+        System.out.println("6. Change product PEGI Category");
+        System.out.println("7. Return to previous menu");
         System.out.println("<------------------------------------------->");
     }
 }

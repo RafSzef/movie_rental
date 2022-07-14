@@ -66,7 +66,7 @@ class ProductRepositoryHibernateTest {
 
         //then
 //        assertThat(result).isEqualTo(true);
-        assertThat(productRepositoryHibernate.getAllProducts().size()).isEqualTo(1);
+        assertThat(productRepositoryHibernate.getAllActiveProducts().size()).isEqualTo(1);
     }
 
 }

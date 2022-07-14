@@ -42,7 +42,7 @@ public class MovieRentalTestR {
 //        productRepositoryHibernate.getProductById(11).ifPresent(System.out::println);
 
 //        System.out.println("><><");
-//        List<Product> allProducts = productRepositoryHibernate.getAllProducts();
+//        List<Product> allProducts = productRepositoryHibernate.getAllActiveProducts();
 //        allProducts.forEach(System.out::println);
 
     }

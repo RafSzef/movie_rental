@@ -50,7 +50,9 @@ public interface ProductsRepository {
      *
      * @return zwraca listę wszystkich produktów. Pustą listę, gdy nie ma produktów.
      */
-    List<Product> getAllProducts();
+    List<Product> getAllActiveProducts();
+
+    List<Product> getAllInactiveActiveProducts();
 
     /**
      * Zmiana kategorii w produkcie o danym id.
@@ -165,4 +167,8 @@ public interface ProductsRepository {
 
 
     List<Product> getListOfProductWithGivenCategory(String title);
+
+    boolean deactivateProduct(Integer id);
+
+    boolean activateProduct(Integer id);
 }

@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 @Getter
 @Setter
-@ToString
 public class Product {
 
     public Product(){    }
@@ -73,6 +72,9 @@ public class Product {
 
     @Column (name = "release_date")
     private LocalDate releaseDate;
+
+    @Column (name = "active")
+    private boolean active = true;
 
     @Override
     public String toString() {

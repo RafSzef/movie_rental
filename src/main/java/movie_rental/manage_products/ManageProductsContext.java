@@ -17,12 +17,14 @@ public class ManageProductsContext implements Context {
             case OPTION_2:
                 return new ProductRemoveStrategy();
             case OPTION_3:
-                return new ProductChangeBranchStrategy();
+                return new ProductActivateStrategy();
             case OPTION_4:
-                return new ProductChangeCategoryStrategy();
+                return new ProductChangeBranchStrategy();
             case OPTION_5:
-                return new ProductChangePegiCategoryStrategy();
+                return new ProductChangeCategoryStrategy();
             case OPTION_6:
+                return new ProductChangePegiCategoryStrategy();
+            case OPTION_7:
                 return new ReturnToAdminPanelStrategy();
             default: {
                 log.info("Wrong - enter command again");

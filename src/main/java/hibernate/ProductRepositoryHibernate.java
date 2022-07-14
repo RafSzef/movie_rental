@@ -1,5 +1,6 @@
 package hibernate;
 
+import action_strategy.MyScanner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tables.*;
@@ -95,20 +96,37 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     @Override
     public List<Product> getListOfProductWithGivenCarrier(String title) {
 
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p -> p.getCarrier().getDescription().equalsIgnoreCase(title))
                 .toList();
     }
 
     @Override
-    public List<Product> getAllProducts() {
+    public List<Product> getAllActiveProducts() {
 
         try {
             var selectAllProducts = """
                     SELECT NEW tables.Product (p.id, p.title, p.category, p.director, p.pegiCategory, p.carrier, p.branch, p.releaseDate)
-                                    
                     FROM Product p
+                    WHERE p.active = 1
+                    """;
+            var query = entityManager.createQuery(selectAllProducts, Product.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No products in database!");
+        }
+        return List.of();
+    }
+
+    @Override
+    public List<Product> getAllInactiveActiveProducts() {
+
+        try {
+            var selectAllProducts = """
+                    SELECT NEW tables.Product (p.id, p.title, p.category, p.director, p.pegiCategory, p.carrier, p.branch, p.releaseDate)
+                    FROM Product p
+                    WHERE p.active = 0 OR p.active = null
                     """;
             var query = entityManager.createQuery(selectAllProducts, Product.class);
             return query.getResultList();
@@ -121,11 +139,11 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     @Override
     public Optional<Product> changeProductCategory(Integer id, Category category) {
         Optional<Product> exstingProduct = getProductById(id);
-        Category existigCategory = addCategory(category);
+        Category existingCategory = addCategory(category);
 
         try {
             entityManager.getTransaction().begin();
-            exstingProduct.ifPresent(p -> p.setCategory(existigCategory));
+            exstingProduct.ifPresent(p -> p.setCategory(existingCategory));
             entityManager.getTransaction().commit();
 
             return exstingProduct;
@@ -139,13 +157,13 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     @Override
     public Optional<Product> changeProductBranch(Integer id, Branch branch) {
         Optional<Product> exstingProduct = getProductById(id);
-        Branch existingBranch = addBranch(branch);
 
         try {
             entityManager.getTransaction().begin();
-            exstingProduct.ifPresent(p -> p.setBranch(existingBranch));
+            exstingProduct.ifPresent(p -> p.setBranch(branch));
             entityManager.getTransaction().commit();
 
+            System.out.println("Product branch changed: " + exstingProduct);
             return exstingProduct;
         } catch (NoSuchElementException e) {
             log.warn("No product with id {}", id);
@@ -473,6 +491,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             return Optional.empty();
         }
     }
+
     public Optional<Branch> getBranch(Integer branchId) {
         try {
             ;
@@ -511,21 +530,75 @@ public class ProductRepositoryHibernate implements ProductsRepository {
 
     @Override
     public List<Product> getListOfProductWithGivenCategory(String title) {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p -> p.getCategory().getTitle().equalsIgnoreCase(title))
                 .toList();
     }
 
+    @Override
+    public boolean deactivateProduct(Integer id) {
+        entityManager.getTransaction().begin();
+        try {
+            var selectSql = """
+                    SELECT p FROM Product p
+                    WHERE p.id =  :id
+                    """;
+            var query = entityManager.createQuery(selectSql, Product.class);
+            query.setParameter("id", id);
+            var existingProduct = query.getSingleResult();
+            existingProduct.setActive(false);
+
+            entityManager.persist(existingProduct);
+            entityManager.getTransaction().commit();
+            System.out.println("Product removed from active: " + existingProduct);
+            MyScanner.pressAnyKeyToContiunue();
+            return true;
+        } catch (
+                NoResultException e) {
+            log.info("No product with id {} found", id);
+            entityManager.getTransaction().commit();
+            MyScanner.pressAnyKeyToContiunue();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean activateProduct(Integer id) {
+        entityManager.getTransaction().begin();
+        try {
+            var selectSql = """
+                    SELECT p FROM Product p
+                    WHERE p.id =  :id
+                    """;
+            var query = entityManager.createQuery(selectSql, Product.class);
+            query.setParameter("id", id);
+            var existingProduct = query.getSingleResult();
+            existingProduct.setActive(true);
+
+            entityManager.persist(existingProduct);
+            entityManager.getTransaction().commit();
+            System.out.println("Product restored: " + existingProduct);
+            MyScanner.pressAnyKeyToContiunue();
+            return true;
+        } catch (
+                NoResultException e) {
+            log.info("No product with id {} found", id);
+            entityManager.getTransaction().commit();
+            MyScanner.pressAnyKeyToContiunue();
+            return false;
+        }
+    }
+
     public List<Category> getListOfallCategories() {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .map(Product::getCategory)
                 .toList();
     }
 
     public List<Carrier> getListOfAllCarerTypes() {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .map(Product::getCarrier)
                 .toList();
@@ -547,7 +620,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     }
 
     public List<Product> getListOfProductWithGivenDirectorName(String name) {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p ->
                         name.equalsIgnoreCase(
@@ -556,28 +629,28 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     }
 
     public List<PegiCategory> getListOfAllPegiCategories() {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .map(Product::getPegiCategory)
                 .toList();
     }
 
     public List<Product> getListOfProductWithGivenPegiCategory(String title) {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p -> p.getPegiCategory().getTitle().equalsIgnoreCase(title))
                 .toList();
     }
 
     public List<Product> getListOfProductCreatedINGivenYear(String year) {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p -> year.equalsIgnoreCase(String.valueOf(p.getReleaseDate().getYear())))
                 .toList();
     }
 
     public List<Integer> GetListOfAllYears() {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .map(p -> p.getReleaseDate().getYear())
                 .toList();
@@ -595,5 +668,19 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             log.info("No branches in database!");
             return List.of();
         }
+    }
+
+    public List<Product> getAllProducts() {
+        try {
+            var selectAllProducts = """
+                    SELECT NEW tables.Product (p.id, p.title, p.category, p.director, p.pegiCategory, p.carrier, p.branch, p.releaseDate)
+                    FROM Product p
+                    """;
+            var query = entityManager.createQuery(selectAllProducts, Product.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No products in database!");
+        }
+        return List.of();
     }
 }
