@@ -1,7 +1,5 @@
 package action_strategy;
 
-import action_strategy.Strategy;
-
 public class ExitProgramStrategy implements Strategy {
 
     @Override

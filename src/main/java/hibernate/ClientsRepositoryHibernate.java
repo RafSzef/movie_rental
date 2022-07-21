@@ -1,6 +1,5 @@
 package hibernate;
 
-import action_strategy.StrategyCommons;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tables.Client;
@@ -210,13 +209,16 @@ public class ClientsRepositoryHibernate implements ClientsRepository{
             Client client = query.getSingleResult();
             if (client.getPassword().equals(password)){
                 log.info("User {} logged in", login);
+                entityManager.getTransaction().commit();
                 return client;
             } else {
                 log.warn("Wrong login or password");
+
             }
             entityManager.getTransaction().commit();
         } catch (NoResultException e) {
             log.warn("Cannot check authorization for non-existing user");
+            entityManager.getTransaction().commit();
         }
         return null;
     }

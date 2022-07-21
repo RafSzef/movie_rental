@@ -1,5 +1,6 @@
 package hibernate;
 
+import action_strategy.MyScanner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tables.*;
@@ -95,20 +96,37 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     @Override
     public List<Product> getListOfProductWithGivenCarrier(String title) {
 
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p -> p.getCarrier().getDescription().equalsIgnoreCase(title))
                 .toList();
     }
 
     @Override
-    public List<Product> getAllProducts() {
+    public List<Product> getAllActiveProducts() {
 
         try {
             var selectAllProducts = """
                     SELECT NEW tables.Product (p.id, p.title, p.category, p.director, p.pegiCategory, p.carrier, p.branch, p.releaseDate)
-                                    
                     FROM Product p
+                    WHERE p.active = 1
+                    """;
+            var query = entityManager.createQuery(selectAllProducts, Product.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No products in database!");
+        }
+        return List.of();
+    }
+
+    @Override
+    public List<Product> getAllInactiveActiveProducts() {
+
+        try {
+            var selectAllProducts = """
+                    SELECT NEW tables.Product (p.id, p.title, p.category, p.director, p.pegiCategory, p.carrier, p.branch, p.releaseDate)
+                    FROM Product p
+                    WHERE p.active = 0 OR p.active = null
                     """;
             var query = entityManager.createQuery(selectAllProducts, Product.class);
             return query.getResultList();
@@ -120,32 +138,30 @@ public class ProductRepositoryHibernate implements ProductsRepository {
 
     @Override
     public Optional<Product> changeProductCategory(Integer id, Category category) {
-        Optional<Product> exstingProduct = getProductById(id);
-        Category existigCategory = addCategory(category);
+        Optional<Product> existingProduct = getProductById(id);
 
         try {
             entityManager.getTransaction().begin();
-            exstingProduct.ifPresent(p -> p.setCategory(existigCategory));
+            existingProduct.ifPresent(p -> p.setCategory(category));
             entityManager.getTransaction().commit();
-
-            return exstingProduct;
+            System.out.println("Category changed in product" + existingProduct);
+            return existingProduct;
         } catch (NoSuchElementException e) {
             log.warn("No product with id {}", id);
             return Optional.empty();
         }
-
     }
 
     @Override
     public Optional<Product> changeProductBranch(Integer id, Branch branch) {
         Optional<Product> exstingProduct = getProductById(id);
-        Branch existingBranch = addBranch(branch);
 
         try {
             entityManager.getTransaction().begin();
-            exstingProduct.ifPresent(p -> p.setBranch(existingBranch));
+            exstingProduct.ifPresent(p -> p.setBranch(branch));
             entityManager.getTransaction().commit();
 
+            System.out.println("Product branch changed: " + exstingProduct);
             return exstingProduct;
         } catch (NoSuchElementException e) {
             log.warn("No product with id {}", id);
@@ -379,8 +395,8 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             entityManager.getTransaction().begin();
             entityManager.remove(existingDirector);
             entityManager.getTransaction().commit();
-            log.info("Director with id: {}, {}, {} deleted",
-                    director.getId(), director.getLastName(), director.getLastName());
+            log.info("Director with , {}, {} deleted",
+                    director.getLastName(), director.getLastName());
             return true;
         } catch (NoResultException e) {
             log.warn("Cannot delete non-existing Director {}, {}"
@@ -409,6 +425,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
 
     @Override
     public Branch addBranch(Branch branch) {
+        entityManager.getTransaction().begin();
         String postalCode = branch.getPostalCode();
         try {
             var selectSql = """
@@ -421,19 +438,19 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             Optional<Branch> existingBranch = Optional.ofNullable(query.getSingleResult());
 
             log.warn("Branch with given postal code already exists: {}", postalCode);
+            entityManager.getTransaction().commit();
             return existingBranch.get();
         } catch (NoResultException e) {
-            entityManager.getTransaction().begin();
+
             entityManager.persist(branch);
             entityManager.getTransaction().commit();
-            log.info("Branch added: {}", branch);
+            log.info("Branch added: {}", branch.getName());
             return branch;
         }
     }
 
     @Override
-    public boolean removeBranch(Branch branch) {
-        String postalCode = branch.getPostalCode();
+    public boolean deactivateBranch(String postalCode) {
         try {
             var selectSql = """
                     SELECT b FROM Branch b
@@ -442,17 +459,38 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             var query = entityManager.createQuery(selectSql, Branch.class);
             query.setParameter("postalCode", postalCode);
             var existingBranch = query.getSingleResult();
+            existingBranch.setActive(false);
 
             entityManager.getTransaction().begin();
-            entityManager.remove(existingBranch);
+            entityManager.persist(existingBranch);
             entityManager.getTransaction().commit();
-            log.info("Branch {}, {} deleted", branch.getName(), branch.getPostalCode());
+            log.info("Branch deactivated");
             return true;
         } catch (NoResultException e) {
-            log.warn("Cannot delete non-existing Branch {}, {}, {}",
-                    branch.getName(),
-                    branch.getPostalCode(),
-                    branch.getAdres());
+            log.warn("Cannot deactivate non-existing Branch ");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean activateBranch(String postalCode) {
+        try {
+            var selectSql = """
+                    SELECT b FROM Branch b
+                    WHERE b.postalCode =  :postalCode
+                    """;
+            var query = entityManager.createQuery(selectSql, Branch.class);
+            query.setParameter("postalCode", postalCode);
+            var existingBranch = query.getSingleResult();
+            existingBranch.setActive(true);
+
+            entityManager.getTransaction().begin();
+            entityManager.persist(existingBranch);
+            entityManager.getTransaction().commit();
+            log.info("Branch activated");
+            return true;
+        } catch (NoResultException e) {
+            log.warn("Cannot activate non-existing Branch");
             return false;
         }
     }
@@ -471,28 +509,125 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             return Optional.of(existingBranch);
         } catch (
                 NoResultException e) {
-            log.info("No branch {} {} {} found", branch.getName(), branch.getAdres(), branch.getPostalCode());
+            log.info("No branch {} {} {} found", branch.getName(), branch.getAddress(), branch.getPostalCode());
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Branch> getBranch(Integer branchId) {
+        try {
+            ;
+            var selectSql = """
+                    SELECT b FROM Branch b
+                    WHERE b.id =  :branchId
+                    """;
+            var query = entityManager.createQuery(selectSql, Branch.class);
+            query.setParameter("branchId", branchId);
+            var existingBranch = query.getSingleResult();
+            return Optional.of(existingBranch);
+        } catch (
+                NoResultException e) {
+            log.info("No branch with id {} found", branchId);
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Branch> getBranch(String postalCode) {
+        try {
+            var selectSql = """
+                    SELECT b FROM Branch b
+                    WHERE b.postalCode =  :postalCode
+                    """;
+            var query = entityManager.createQuery(selectSql, Branch.class);
+            query.setParameter("postalCode", postalCode);
+            var existingBranch = query.getSingleResult();
+            return Optional.of(existingBranch);
+        } catch (
+                NoResultException e) {
+            log.info("No branch witch postal code {} found", postalCode);
             return Optional.empty();
         }
     }
 
     @Override
     public List<Product> getListOfProductWithGivenCategory(String title) {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p -> p.getCategory().getTitle().equalsIgnoreCase(title))
                 .toList();
     }
 
-    public List<Category> getListOfallCategories() {
-        List<Product> list = getAllProducts();
-        return list.stream()
-                .map(Product::getCategory)
-                .toList();
+    @Override
+    public boolean deactivateProduct(Integer id) {
+        entityManager.getTransaction().begin();
+        try {
+            var selectSql = """
+                    SELECT p FROM Product p
+                    WHERE p.id =  :id
+                    """;
+            var query = entityManager.createQuery(selectSql, Product.class);
+            query.setParameter("id", id);
+            var existingProduct = query.getSingleResult();
+            existingProduct.setActive(false);
+
+            entityManager.persist(existingProduct);
+            entityManager.getTransaction().commit();
+            System.out.println("Product removed from active: " + existingProduct);
+            MyScanner.pressAnyKeyToContinue();
+            return true;
+        } catch (
+                NoResultException e) {
+            log.info("No product with id {} found", id);
+            entityManager.getTransaction().commit();
+            MyScanner.pressAnyKeyToContinue();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean activateProduct(Integer id) {
+        entityManager.getTransaction().begin();
+        try {
+            var selectSql = """
+                    SELECT p FROM Product p
+                    WHERE p.id =  :id
+                    """;
+            var query = entityManager.createQuery(selectSql, Product.class);
+            query.setParameter("id", id);
+            var existingProduct = query.getSingleResult();
+            existingProduct.setActive(true);
+
+            entityManager.persist(existingProduct);
+            entityManager.getTransaction().commit();
+            System.out.println("Product restored: " + existingProduct);
+            MyScanner.pressAnyKeyToContinue();
+            return true;
+        } catch (
+                NoResultException e) {
+            log.info("No product with id {} found", id);
+            entityManager.getTransaction().commit();
+            MyScanner.pressAnyKeyToContinue();
+            return false;
+        }
+    }
+
+    public List<Category> getListOfAllCategories() {
+        try {
+            var selectAllCategpries = """
+                    SELECT NEW tables.Category (c.id, c.title)
+                    FROM Category c
+                    """;
+            var query = entityManager.createQuery(selectAllCategpries, Category.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No categories in database!");
+            return List.of();
+        }
     }
 
     public List<Carrier> getListOfAllCarerTypes() {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .map(Product::getCarrier)
                 .toList();
@@ -500,14 +635,21 @@ public class ProductRepositoryHibernate implements ProductsRepository {
 
 
     public List<Director> getListOfAllDirectors() {
-        List<Product> list = getAllProducts();
-        return list.stream()
-                .map(Product::getDirector)
-                .toList();
+        try {
+            var selectAllProducts = """
+                    SELECT NEW tables.Director (d.id, d.firstName, d.lastName)
+                    FROM Director d
+                    """;
+            var query = entityManager.createQuery(selectAllProducts, Director.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No directors in database!");
+            return List.of();
+        }
     }
 
     public List<Product> getListOfProductWithGivenDirectorName(String name) {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p ->
                         name.equalsIgnoreCase(
@@ -516,30 +658,110 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     }
 
     public List<PegiCategory> getListOfAllPegiCategories() {
-        List<Product> list = getAllProducts();
-        return list.stream()
-                .map(Product::getPegiCategory)
-                .toList();
+        try {
+            var selectAllCategpries = """
+                    SELECT NEW tables.PegiCategory (c.id, c.title)
+                    FROM PegiCategory c
+                    """;
+            var query = entityManager.createQuery(selectAllCategpries, PegiCategory.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No pegi categories in database!");
+            return List.of();
+        }
     }
 
     public List<Product> getListOfProductWithGivenPegiCategory(String title) {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p -> p.getPegiCategory().getTitle().equalsIgnoreCase(title))
                 .toList();
     }
 
     public List<Product> getListOfProductCreatedINGivenYear(String year) {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .filter(p -> year.equalsIgnoreCase(String.valueOf(p.getReleaseDate().getYear())))
                 .toList();
     }
 
     public List<Integer> GetListOfAllYears() {
-        List<Product> list = getAllProducts();
+        List<Product> list = getAllActiveProducts();
         return list.stream()
                 .map(p -> p.getReleaseDate().getYear())
                 .toList();
+    }
+
+    public List<Branch> getListOfAllBranches() {
+        try {
+            var selectAllProducts = """
+                    SELECT NEW tables.Branch (b.id, b.name, b.postalCode, b.address, b.active)
+                    FROM Branch b
+                    """;
+            var query = entityManager.createQuery(selectAllProducts, Branch.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No branches in database!");
+            return List.of();
+        }
+    }
+
+    public List<Product> getAllProducts() {
+        try {
+            var selectAllProducts = """
+                    SELECT NEW tables.Product (p.id, p.title, p.category, p.director, p.pegiCategory, p.carrier, p.branch, p.releaseDate)
+                    FROM Product p
+                    """;
+            var query = entityManager.createQuery(selectAllProducts, Product.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            log.info("No products in database!");
+        }
+        return List.of();
+    }
+
+    public Optional<Category> getCategoryById(Integer categoryId) {
+        try {
+            var selectSql = """
+                    SELECT c FROM Category c
+                    WHERE c.id = :id
+                    """;
+            var query = entityManager.createQuery(selectSql, Category.class);
+            query.setParameter("id", categoryId);
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            log.info("No Category with id {}", categoryId);
+            return Optional.empty();
+        }
+    }
+
+    public Optional<PegiCategory> getPegiCategoryById(Integer categoryId) {
+        try {
+            var selectSql = """
+                    SELECT c FROM PegiCategory c
+                    WHERE c.id = :id
+                    """;
+            var query = entityManager.createQuery(selectSql, PegiCategory.class);
+            query.setParameter("id", categoryId);
+            return Optional.ofNullable(query.getSingleResult());
+        } catch (NoResultException e) {
+            log.info("No PEGI Category with id {}", categoryId);
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Product> changePegiProductCategory(Integer productId, PegiCategory newCategory) {
+        Optional<Product> existingProduct = getProductById(productId);
+
+        try {
+            entityManager.getTransaction().begin();
+            existingProduct.ifPresent(p -> p.setPegiCategory(newCategory));
+            entityManager.getTransaction().commit();
+            System.out.println("Category changed in product" + existingProduct);
+            return existingProduct;
+        } catch (NoSuchElementException e) {
+            log.warn("No product with id {}", productId);
+            return Optional.empty();
+        }
     }
 }

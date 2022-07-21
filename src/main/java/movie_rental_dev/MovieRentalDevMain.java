@@ -1,21 +1,10 @@
-//package movie_rental_dev;
-//
-//import hibernate.ClientBasicInfo;
-//import hibernate.ClientsRepositoryHibernate;
-//import hibernate.ProductRepositoryHibernate;
-//import hibernate.RentsRepositoryHibernate;
-//import lombok.extern.slf4j.Slf4j;
-//import tables.*;
-//
-//import javax.persistence.EntityManager;
-//import javax.persistence.EntityManagerFactory;
-//import javax.persistence.Persistence;
-//import java.sql.SQLException;
-//import java.time.LocalDate;
-//
-//@Slf4j
-//public class MovieRentalDevMain {
-//
+package movie_rental_dev;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class MovieRentalDevMain {
+
 //    private static EntityManagerFactory entityManagerFactory;
 //    private static EntityManager entityManager;
 //    private static ClientsRepositoryHibernate clientsRepositoryHibernate;
@@ -30,11 +19,11 @@
 //        productRepositoryHibernate = new ProductRepositoryHibernate(entityManager);
 //        rentsRepositoryHibernate = new RentsRepositoryHibernate(entityManager);
 //
+//        testCreateNewClient();
 ////        testCreateNewClient();
 ////        testCreateNewClient();
-////        testCreateNewClient();
-//        testCreateRent();
-//        testIsProductAvailableAtGivenDate();
+////        testCreateRent();
+////        testIsProductAvailableAtGivenDate();
 ////        testFirstAvailableDate();
 //
 //        System.out.println("test");
@@ -105,22 +94,22 @@
 //
 //    private static void testCreateNewClient() {
 //        Client client = new Client();
-//        client.setFirstName("Jan");
-//        client.setLastName("Kowalski");
-//        client.setPhoneNumber("669420511");
+//        client.setFirstName("test");
+//        client.setLastName("test");
+//        client.setPhoneNumber("669421211");
 //        client.setEmail("jan.kowalski@gmail.com");
 //        client.setPostalCode("20-420");
 //        client.setAddress("Krakowskie Przedmieście 5/24");
-//        client.setLogin("jankow56");
+//        client.setLogin("user1");
 //        client.setPassword("1234");
-//        client.setAdmin(1);
+//        client.setAdmin(0);
 //        clientsRepositoryHibernate.createClient(client);
 //    }
 //
 //    static Product buildProductWithName(String name) {
 //        Branch branchTmp = new Branch();
 //        branchTmp.setName("Gdzies");
-//        branchTmp.setAdres("ulica");
+//        branchTmp.setAddress("ulica");
 //        branchTmp.setPostalCode("12-345");
 //        Branch branch = productRepositoryHibernate.addBranch(branchTmp);
 //
@@ -153,4 +142,4 @@
 //        product.setReleaseDate(LocalDate.of(1996, 12, 13));
 //        return product;
 //    }
-//}
+}

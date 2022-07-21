@@ -50,7 +50,9 @@ public interface ProductsRepository {
      *
      * @return zwraca listę wszystkich produktów. Pustą listę, gdy nie ma produktów.
      */
-    List<Product> getAllProducts();
+    List<Product> getAllActiveProducts();
+
+    List<Product> getAllInactiveActiveProducts();
 
     /**
      * Zmiana kategorii w produkcie o danym id.
@@ -157,16 +159,18 @@ public interface ProductsRepository {
      */
     Branch addBranch(Branch branch);
 
-    /**
-     * Usuwa oddział z bazy.
-     *
-     * @param branch oddział do usunięcia.
-     * @return true - usunięty; false - brak oddziału w bazie;
-     */
-    boolean removeBranch(Branch branch);
+    boolean deactivateBranch(String postalCode);
+
+    boolean activateBranch(String postalCode);
 
     Optional<Branch> getBranch(Branch branch);
 
+    Optional<Branch> getBranch(String postalCode);
+
 
     List<Product> getListOfProductWithGivenCategory(String title);
+
+    boolean deactivateProduct(Integer id);
+
+    boolean activateProduct(Integer id);
 }

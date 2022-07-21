@@ -2,7 +2,6 @@ package action_strategy;
 
 import hibernate.ClientsRepositoryHibernate;
 import hibernate.ProductRepositoryHibernate;
-import hibernate.RentsRepository;
 import hibernate.RentsRepositoryHibernate;
 import tables.Client;
 

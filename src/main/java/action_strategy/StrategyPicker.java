@@ -1,7 +1,6 @@
 package action_strategy;
 
 import java.util.Optional;
-import java.util.Scanner;
 
 public enum StrategyPicker {
     OPTION_0,
@@ -31,7 +30,7 @@ public enum StrategyPicker {
         Optional<StrategyPicker> strategyPicker = Optional.ofNullable(StrategyPicker.getTypeByOrdinal(input));
 
         if (strategyPicker.isEmpty()) {
-            System.out.printf("Incorrect input. New ");
+            System.out.print("Incorrect input. New ");
             return getOptionFromScanner();
         }
 

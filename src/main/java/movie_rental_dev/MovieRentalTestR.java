@@ -1,13 +1,6 @@
 package movie_rental_dev;
 
 import action_strategy.login_panel.LoginLogic;
-import hibernate.ProductRepositoryHibernate;
-import tables.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import java.time.LocalDate;
 
 public class MovieRentalTestR {
 
@@ -42,7 +35,7 @@ public class MovieRentalTestR {
 //        productRepositoryHibernate.getProductById(11).ifPresent(System.out::println);
 
 //        System.out.println("><><");
-//        List<Product> allProducts = productRepositoryHibernate.getAllProducts();
+//        List<Product> allProducts = productRepositoryHibernate.getAllActiveProducts();
 //        allProducts.forEach(System.out::println);
 
     }
@@ -158,8 +151,8 @@ public class MovieRentalTestR {
 //        productRepositoryHibernate.addBranch(branch1);
 //        productRepositoryHibernate.addBranch(branch2);
 //        System.out.println(productRepositoryHibernate.getBranch(branch1));
-//        productRepositoryHibernate.removeBranch(branch1);
-//        productRepositoryHibernate.removeBranch(branch1);
+//        productRepositoryHibernate.deactivateBranch(branch1);
+//        productRepositoryHibernate.deactivateBranch(branch1);
 //    }
 //
 //    private static void addProductTest() {

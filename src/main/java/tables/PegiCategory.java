@@ -10,7 +10,11 @@ import javax.persistence.*;
 @Setter
 @ToString
 @EqualsAndHashCode
+@AllArgsConstructor
 public class PegiCategory {
+
+    public PegiCategory() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

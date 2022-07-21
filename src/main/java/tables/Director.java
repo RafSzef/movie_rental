@@ -1,6 +1,8 @@
 package tables;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -8,9 +10,20 @@ import javax.persistence.*;
 @Table(name = "directors")
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 public class Director {
+
+    public Director() {
+    }
+
+    public Director(String firstName, String lastName) {
+    }
+
+    public Director(Integer id, String firstName, String lastName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
@@ -21,4 +34,11 @@ public class Director {
 
     @Column(name = "last_name", length = 64)
     private String lastName;
+
+    @Override
+    public String toString() {
+        return "Director #" + id +
+                ": " + firstName +
+                " " + lastName;
+    }
 }

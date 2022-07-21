@@ -4,10 +4,8 @@ import action_strategy.MyScanner;
 import action_strategy.Strategy;
 import action_strategy.StrategyCommons;
 import action_strategy.admin_defining.AdminDefiningLogic;
-import hibernate.ClientsRepositoryHibernate;
 import tables.Client;
 
-import static hibernate.ClientsRepositoryHibernate.*;
 
 public class LoginStrategy implements Strategy {
 
@@ -21,13 +19,18 @@ public class LoginStrategy implements Strategy {
         System.out.println("Enter password:");
         String password = MyScanner.getText();
 
-        Client client = StrategyCommons.getClientsRepositoryHibernate().authorization(login, password);
+        try {
+            Client client = StrategyCommons.getClientsRepositoryHibernate().authorization(login, password);
+            StrategyCommons.setLoggedClient(client);
 
-        StrategyCommons.setLoggedClient(client);
-
-        boolean isAdmin = client.getAdmin() == 1;
-
-        AdminDefiningLogic.getInstance().definePermission(isAdmin);
+            boolean isAdmin = client.getAdmin() == 1;
+            AdminDefiningLogic.getInstance().definePermission(isAdmin);
+        } catch (NullPointerException e) {
+            System.out.println("Wrong login or password. Try again ?");
+            if (MyScanner.yesOrNo()) {
+                algorithm();
+            } else LoginLogic.getInstance().startLoginPanel();
+        }
     }
 
     private void displayLoginPanel() {

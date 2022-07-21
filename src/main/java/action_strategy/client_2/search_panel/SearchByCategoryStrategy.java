@@ -15,7 +15,7 @@ public class SearchByCategoryStrategy implements Strategy {
         ProductRepositoryHibernate repository = StrategyCommons.getProductRepositoryHibernate();
         System.out.println("<------------------------------------------->");
         System.out.println("<-- LIST OF AVAILABLE CATEGORIES ----------->");
-        repository.getListOfallCategories().stream()
+        repository.getListOfAllCategories().stream()
                 .distinct()
                 .forEach(c -> System.out.println(c.getTitle()));
         System.out.println("Enter category:");
@@ -26,7 +26,7 @@ public class SearchByCategoryStrategy implements Strategy {
 
         if (resultList.isEmpty()) {
             System.out.println("No product with given category. \nReturning to previous menu");
-            MyScanner.pressAnyKeyToContiunue();
+            MyScanner.pressAnyKeyToContinue();
             new SearchPanelLogic().startAdminUserManagementPanel();
         }
         resultList.forEach(System.out::println);
@@ -39,7 +39,7 @@ public class SearchByCategoryStrategy implements Strategy {
 
             System.out.println("RENTING PRODUCT METHOD HERE");
         } else System.out.println("Returning to previous menu");
-        MyScanner.pressAnyKeyToContiunue();
+        MyScanner.pressAnyKeyToContinue();
         new SearchPanelLogic().startAdminUserManagementPanel();
     }
 }

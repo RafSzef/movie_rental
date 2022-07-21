@@ -1,6 +1,8 @@
 package hibernate;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tables.*;
 
 import javax.persistence.EntityManager;
@@ -66,7 +68,7 @@ class ProductRepositoryHibernateTest {
 
         //then
 //        assertThat(result).isEqualTo(true);
-        assertThat(productRepositoryHibernate.getAllProducts().size()).isEqualTo(1);
+        assertThat(productRepositoryHibernate.getAllActiveProducts().size()).isEqualTo(1);
     }
 
 }

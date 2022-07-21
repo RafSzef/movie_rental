@@ -6,7 +6,6 @@ import tables.Product;
 import tables.Rent;
 
 import javax.persistence.EntityManager;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
