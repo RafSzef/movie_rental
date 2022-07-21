@@ -21,7 +21,7 @@ public class BranchDeactivateStrategy implements Strategy {
         String postalCode = MyScanner.getText();
         repository.deactivateBranch(postalCode);
 
-        MyScanner.pressAnyKeyToContiunue();
+        MyScanner.pressAnyKeyToContinue();
         new ManageBranchesLogic().startAdminBranchManagementPanel();
     }
 }

@@ -31,7 +31,7 @@ public class DirectorRemoveStrategy implements Strategy {
 
         repository.removeDirector(toRemove);
 
-        MyScanner.pressAnyKeyToContiunue();
+        MyScanner.pressAnyKeyToContinue();
         new ManageDirectorLogic().startAdminDirectorsManagementPanel();
     }
 }

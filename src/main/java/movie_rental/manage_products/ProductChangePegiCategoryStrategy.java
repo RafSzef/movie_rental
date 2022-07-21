@@ -4,7 +4,6 @@ import action_strategy.MyScanner;
 import action_strategy.Strategy;
 import action_strategy.StrategyCommons;
 import hibernate.ProductRepositoryHibernate;
-import tables.Category;
 import tables.PegiCategory;
 
 public class ProductChangePegiCategoryStrategy implements Strategy {
@@ -31,7 +30,7 @@ public class ProductChangePegiCategoryStrategy implements Strategy {
             PegiCategory newCategory = repository.getPegiCategoryById(categoryId).get();
 
             repository.changePegiProductCategory(productId, newCategory);
-            MyScanner.pressAnyKeyToContiunue();
+            MyScanner.pressAnyKeyToContinue();
         } catch (Exception e) {
             System.out.println("No PEGI category with given id");
         }

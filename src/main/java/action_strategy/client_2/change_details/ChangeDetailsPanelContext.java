@@ -4,7 +4,6 @@ import action_strategy.Context;
 import action_strategy.Strategy;
 import action_strategy.StrategyPicker;
 import action_strategy.client_2.ReturnToClientPanelStrategy;
-import action_strategy.client_2.search_panel.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -6,9 +6,7 @@ import action_strategy.StrategyCommons;
 import hibernate.ProductRepositoryHibernate;
 import tables.*;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
-import java.util.InvalidPropertiesFormatException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 

@@ -1,6 +1,5 @@
 package hibernate;
 
-import action_strategy.StrategyCommons;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tables.Client;

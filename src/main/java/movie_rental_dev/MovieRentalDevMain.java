@@ -1,16 +1,6 @@
 package movie_rental_dev;
 
-import hibernate.ClientsRepositoryHibernate;
-import hibernate.ProductRepositoryHibernate;
-import hibernate.RentsRepositoryHibernate;
 import lombok.extern.slf4j.Slf4j;
-import tables.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import java.sql.SQLException;
-import java.time.LocalDate;
 
 @Slf4j
 public class MovieRentalDevMain {

@@ -1,7 +1,5 @@
 package action_strategy;
 
-import action_strategy.login_panel.LoginLogic;
-
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -20,8 +18,7 @@ public class MyScanner {
     public static String getText() {
         scanner = new Scanner(System.in);
         try {
-            String result = scanner.nextLine();
-            return result;
+            return scanner.nextLine();
         } catch (InputMismatchException e) {
             System.out.println("Incorrect input type. Text expected. Try again: ");
             return getText();
@@ -31,8 +28,7 @@ public class MyScanner {
     public static int getInt() {
         scanner = new Scanner(System.in);
         try {
-            int result = scanner.nextInt();
-            return result;
+            return scanner.nextInt();
         } catch (InputMismatchException e) {
             System.out.println("Incorrect input type. Number expected. Try again: ");
             return getInt();
@@ -57,7 +53,7 @@ public class MyScanner {
         }
     }
 
-    public static void pressAnyKeyToContiunue () {
+    public static void pressAnyKeyToContinue() {
         System.out.print("Press any key to continue.");
         scanner = new Scanner(System.in);
         scanner.nextLine();

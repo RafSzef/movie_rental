@@ -27,7 +27,7 @@ public class DirectorAddStrategy implements Strategy {
 
         repository.addDirector(newDirector);
 
-        MyScanner.pressAnyKeyToContiunue();
+        MyScanner.pressAnyKeyToContinue();
         new ManageDirectorLogic().startAdminDirectorsManagementPanel();
         System.out.println("Branch add method");
         new ManageDirectorLogic().startAdminDirectorsManagementPanel();

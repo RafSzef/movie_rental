@@ -35,7 +35,7 @@ public class BranchAddStrategy implements Strategy {
             System.out.println("Could not add branch");
         }
 
-        MyScanner.pressAnyKeyToContiunue();
+        MyScanner.pressAnyKeyToContinue();
         new ManageBranchesLogic().startAdminBranchManagementPanel();
         //TODO
         System.out.println("Branch add method");

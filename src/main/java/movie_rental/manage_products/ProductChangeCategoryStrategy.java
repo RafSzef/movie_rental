@@ -30,7 +30,7 @@ public class ProductChangeCategoryStrategy implements Strategy {
             Category newCategory = repository.getCategoryById(categoryId).get();
 
             repository.changeProductCategory(productId, newCategory);
-            MyScanner.pressAnyKeyToContiunue();
+            MyScanner.pressAnyKeyToContinue();
         } catch (Exception e) {
             System.out.println("No category with given id");
         }

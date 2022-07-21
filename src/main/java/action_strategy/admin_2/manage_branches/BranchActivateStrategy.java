@@ -19,7 +19,7 @@ public class BranchActivateStrategy implements Strategy {
         String postalCode = MyScanner.getText();
         repository.activateBranch(postalCode);
 
-        MyScanner.pressAnyKeyToContiunue();
+        MyScanner.pressAnyKeyToContinue();
         new ManageBranchesLogic().startAdminBranchManagementPanel();
     }
 }

@@ -3,7 +3,6 @@ package movie_rental.manage_products;
 import action_strategy.MyScanner;
 import action_strategy.Strategy;
 import action_strategy.StrategyCommons;
-import action_strategy.admin_2.manage_branches.ManageBranchesLogic;
 import hibernate.ProductRepositoryHibernate;
 import tables.Branch;
 
@@ -31,7 +30,7 @@ public class ProductChangeBranchStrategy implements Strategy {
             Branch newBranch = repository.getBranch(branchId).get();
 
             repository.changeProductBranch(productId, newBranch);
-            MyScanner.pressAnyKeyToContiunue();
+            MyScanner.pressAnyKeyToContinue();
         } catch (Exception e) {
             e.printStackTrace();
         }

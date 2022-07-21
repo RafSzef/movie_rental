@@ -574,13 +574,13 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             entityManager.persist(existingProduct);
             entityManager.getTransaction().commit();
             System.out.println("Product removed from active: " + existingProduct);
-            MyScanner.pressAnyKeyToContiunue();
+            MyScanner.pressAnyKeyToContinue();
             return true;
         } catch (
                 NoResultException e) {
             log.info("No product with id {} found", id);
             entityManager.getTransaction().commit();
-            MyScanner.pressAnyKeyToContiunue();
+            MyScanner.pressAnyKeyToContinue();
             return false;
         }
     }
@@ -601,13 +601,13 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             entityManager.persist(existingProduct);
             entityManager.getTransaction().commit();
             System.out.println("Product restored: " + existingProduct);
-            MyScanner.pressAnyKeyToContiunue();
+            MyScanner.pressAnyKeyToContinue();
             return true;
         } catch (
                 NoResultException e) {
             log.info("No product with id {} found", id);
             entityManager.getTransaction().commit();
-            MyScanner.pressAnyKeyToContiunue();
+            MyScanner.pressAnyKeyToContinue();
             return false;
         }
     }
