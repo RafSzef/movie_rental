@@ -15,8 +15,10 @@ public class ManageBranchesContext implements Context {
             case OPTION_1:
                 return new BranchAddStrategy();
             case OPTION_2:
-                return new BranchRemoveStrategy();
+                return new BranchDeactivateStrategy();
             case OPTION_3:
+                return new BranchActivateStrategy();
+            case OPTION_4:
                 return new ReturnToAdminPanelStrategy();
             default: {
                 log.info("Wrong - enter command again");

@@ -158,8 +158,8 @@ public class MovieRentalTestR {
 //        productRepositoryHibernate.addBranch(branch1);
 //        productRepositoryHibernate.addBranch(branch2);
 //        System.out.println(productRepositoryHibernate.getBranch(branch1));
-//        productRepositoryHibernate.removeBranch(branch1);
-//        productRepositoryHibernate.removeBranch(branch1);
+//        productRepositoryHibernate.deactivateBranch(branch1);
+//        productRepositoryHibernate.deactivateBranch(branch1);
 //    }
 //
 //    private static void addProductTest() {

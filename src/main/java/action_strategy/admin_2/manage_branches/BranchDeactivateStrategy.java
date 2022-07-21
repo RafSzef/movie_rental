@@ -4,9 +4,10 @@ import action_strategy.MyScanner;
 import action_strategy.Strategy;
 import action_strategy.StrategyCommons;
 import hibernate.ProductRepositoryHibernate;
+import tables.Branch;
 
 
-public class BranchRemoveStrategy implements Strategy {
+public class BranchDeactivateStrategy implements Strategy {
     @Override
     public void algorithm() {
         ProductRepositoryHibernate repository = StrategyCommons.getProductRepositoryHibernate();
@@ -14,10 +15,11 @@ public class BranchRemoveStrategy implements Strategy {
         System.out.println("<-- LIST OF AVAILABLE BRANCHES ------------->");
         repository.getListOfAllBranches().stream()
                 .distinct()
+                .filter(Branch::isActive)
                 .forEach(System.out::println);
-        System.out.println("Enter Branch postal code to remove:");
+        System.out.println("Enter Branch postal code to deactivate:");
         String postalCode = MyScanner.getText();
-        repository.removeBranch(postalCode);
+        repository.deactivateBranch(postalCode);
 
         MyScanner.pressAnyKeyToContiunue();
         new ManageBranchesLogic().startAdminBranchManagementPanel();

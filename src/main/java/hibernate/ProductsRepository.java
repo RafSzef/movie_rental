@@ -159,7 +159,9 @@ public interface ProductsRepository {
      */
     Branch addBranch(Branch branch);
 
-    boolean removeBranch(String postalCode);
+    boolean deactivateBranch(String postalCode);
+
+    boolean activateBranch(String postalCode);
 
     Optional<Branch> getBranch(Branch branch);
 

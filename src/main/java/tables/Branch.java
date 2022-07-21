@@ -29,12 +29,14 @@ public class Branch {
     @Column(length = 64)
     private String address;
 
+    @Column
+    private boolean active;
     @Override
     public String toString() {
         return "Branch" +
                 "id = " + id +
                 ", name = '" + name + '\'' +
                 ", postalCode = '" + postalCode + '\'' +
-                ", adres = '" + address + '\'';
+                ", address = '" + address + '\'';
     }
 }

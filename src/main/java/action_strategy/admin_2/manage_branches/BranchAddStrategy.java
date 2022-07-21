@@ -26,8 +26,14 @@ public class BranchAddStrategy implements Strategy {
         newBranch.setPostalCode(MyScanner.getText());
         System.out.println("Enter address");
         newBranch.setAddress(MyScanner.getText());
+        System.out.println("Set active");
+        newBranch.setActive(MyScanner.yesOrNo());
 
-        repository.addBranch(newBranch);
+        try {
+            repository.addBranch(newBranch);
+        } catch(Exception e) {
+            System.out.println("Could not add branch");
+        }
 
         MyScanner.pressAnyKeyToContiunue();
         new ManageBranchesLogic().startAdminBranchManagementPanel();

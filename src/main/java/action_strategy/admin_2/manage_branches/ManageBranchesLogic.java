@@ -28,8 +28,9 @@ public class ManageBranchesLogic {
         System.out.println("Select option:");
         System.out.println("<------------------------------------------->");
         System.out.println("1. Add branch");
-        System.out.println("2. Remove branch");
-        System.out.println("3. Return to previous menu");
+        System.out.println("2. Deactivate branch");
+        System.out.println("3. Activate branch");
+        System.out.println("4. Return to previous menu");
         System.out.println("<------------------------------------------->");
     }
 }

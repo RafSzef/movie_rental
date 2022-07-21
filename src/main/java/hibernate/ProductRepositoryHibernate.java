@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -451,7 +450,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     }
 
     @Override
-    public boolean removeBranch(String postalCode) {
+    public boolean deactivateBranch(String postalCode) {
         try {
             var selectSql = """
                     SELECT b FROM Branch b
@@ -460,14 +459,38 @@ public class ProductRepositoryHibernate implements ProductsRepository {
             var query = entityManager.createQuery(selectSql, Branch.class);
             query.setParameter("postalCode", postalCode);
             var existingBranch = query.getSingleResult();
+            existingBranch.setActive(false);
 
             entityManager.getTransaction().begin();
-            entityManager.remove(existingBranch);
+            entityManager.persist(existingBranch);
             entityManager.getTransaction().commit();
-            log.info("Branch deleted");
+            log.info("Branch deactivated");
             return true;
         } catch (NoResultException e) {
-            log.warn("Cannot delete non-existing Branch ");
+            log.warn("Cannot deactivate non-existing Branch ");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean activateBranch(String postalCode) {
+        try {
+            var selectSql = """
+                    SELECT b FROM Branch b
+                    WHERE b.postalCode =  :postalCode
+                    """;
+            var query = entityManager.createQuery(selectSql, Branch.class);
+            query.setParameter("postalCode", postalCode);
+            var existingBranch = query.getSingleResult();
+            existingBranch.setActive(true);
+
+            entityManager.getTransaction().begin();
+            entityManager.persist(existingBranch);
+            entityManager.getTransaction().commit();
+            log.info("Branch activated");
+            return true;
+        } catch (NoResultException e) {
+            log.warn("Cannot activate non-existing Branch");
             return false;
         }
     }
@@ -672,7 +695,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     public List<Branch> getListOfAllBranches() {
         try {
             var selectAllProducts = """
-                    SELECT NEW tables.Branch (b.id, b.name, b.postalCode, b.address)
+                    SELECT NEW tables.Branch (b.id, b.name, b.postalCode, b.address, b.active)
                     FROM Branch b
                     """;
             var query = entityManager.createQuery(selectAllProducts, Branch.class);
