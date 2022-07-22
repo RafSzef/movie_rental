@@ -16,12 +16,18 @@ import java.time.LocalDate;
 @Entity
 public class Rent {
 
-    public Rent() {
+    public Rent(Product product, Integer id, LocalDate start, LocalDate end) {
 
     }
 
     public Rent(Integer id, Product product, Client client, LocalDate rentDate, LocalDate returnDate) {
         this.id = id;
+        this.product = product;
+        this.client = client;
+        this.rentDate = rentDate;
+        this.returnDate = returnDate;
+    }
+   public Rent( Product product, Client client, LocalDate rentDate, LocalDate returnDate) {
         this.product = product;
         this.client = client;
         this.rentDate = rentDate;

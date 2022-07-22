@@ -709,7 +709,7 @@ public class ProductRepositoryHibernate implements ProductsRepository {
     public List<Product> getAllProducts() {
         try {
             var selectAllProducts = """
-                    SELECT NEW tables.Product (p.id, p.title, p.category, p.director, p.pegiCategory, p.carrier, p.branch, p.releaseDate)
+                    SELECT NEW tables.Product (p.id, p.title, p.category, p.director, p.pegiCategory, p.carrier, p.branch, p.releaseDate, p.rentStartDate, p.rentEndDate)
                     FROM Product p
                     """;
             var query = entityManager.createQuery(selectAllProducts, Product.class);

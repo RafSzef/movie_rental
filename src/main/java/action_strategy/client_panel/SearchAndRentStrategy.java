@@ -1,7 +1,7 @@
 package action_strategy.client_panel;
 
 import action_strategy.Strategy;
-import action_strategy.client_2.search_panel.SearchPanelLogic;
+import action_strategy.client_panel.client_panel_2.search_panel.SearchPanelLogic;
 
 public class SearchAndRentStrategy implements Strategy {
     @Override

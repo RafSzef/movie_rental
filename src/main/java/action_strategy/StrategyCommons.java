@@ -40,7 +40,7 @@ public class StrategyCommons {
         return client;
     }
 
-    Client getClient() {
+    public static Client getClient() {
         if (loggedUser == null) {
             System.out.println("no user logged to system");
             return null;

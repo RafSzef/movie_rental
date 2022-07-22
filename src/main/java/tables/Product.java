@@ -14,7 +14,8 @@ import java.time.LocalDate;
 @Setter
 public class Product {
 
-    public Product(){    }
+    public Product() {
+    }
 
     public Product(Integer id, String title) {
         this.id = id;
@@ -45,6 +46,28 @@ public class Product {
         this.releaseDate = releaseDate;
     }
 
+    public Product(Integer id,
+                   String title,
+                   Category category,
+                   Director director,
+                   PegiCategory pegiCategory,
+                   Carrier carrier,
+                   Branch branch,
+                   LocalDate releaseDate,
+                   LocalDate rentStartDate,
+                   LocalDate rentEndDate) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.director = director;
+        this.pegiCategory = pegiCategory;
+        this.carrier = carrier;
+        this.branch = branch;
+        this.releaseDate = releaseDate;
+        this.rentStartDate = rentStartDate;
+        this.rentEndDate = rentEndDate;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -52,31 +75,37 @@ public class Product {
     @Column(length = 64)
     private String title;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "director_id")
     private Director director;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pegi_category_id")
     private PegiCategory pegiCategory;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "carrier_id")
     private Carrier carrier;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
-    @Column (name = "release_date")
+    @Column(name = "release_date")
     private LocalDate releaseDate;
 
-    @Column (name = "active")
+    @Column(name = "active")
     private boolean active = true;
+
+    @Column(name = "rent_start")
+    private LocalDate rentStartDate;
+
+    @Column(name = "rent_end")
+    private LocalDate rentEndDate;
 
     @Override
     public String toString() {
@@ -85,9 +114,20 @@ public class Product {
                 " title= '" + title + '\'' +
                 ", releaseDate = " + releaseDate +
                 ", category = " + category.getTitle() +
-                ", director = " + director.getFirstName() + " " +director.getLastName() +
+                ", director = " + director.getFirstName() + " " + director.getLastName() +
                 ", pegiCategory = " + pegiCategory.getTitle() +
                 ", carrier = " + carrier.getDescription() +
-                ", available in = " + branch.getName();
+                ", available in = " + branch.getName() +
+                ", " + displayDate();
+    }
+
+    private String displayDate() {
+        try {
+            if (rentEndDate.isBefore(LocalDate.now())) {
+                return "returned "+ rentEndDate +", available for rent now!";
+            } else return "rented until " + rentEndDate;
+        } catch (NullPointerException e) {
+            return "available for rent now!";
+        }
     }
 }

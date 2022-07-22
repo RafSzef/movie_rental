@@ -1,7 +1,7 @@
 package action_strategy.admin_panel;
 
 import action_strategy.Strategy;
-import movie_rental.manage_products.ManageProductLogic;
+import action_strategy.admin_panel.admin_panel_2.manage_products.ManageProductLogic;
 
 public class ProductOperationsStrategy implements Strategy {
     @Override
