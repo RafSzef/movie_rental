@@ -18,8 +18,8 @@ public class RentsRepositoryHibernate implements RentsRepository {
     private final EntityManager entityManager;
 
     /**
-     * @deprecated
      * @param rent
+     * @deprecated
      */
     @Override
     public void createRent(Rent rent) {
@@ -79,7 +79,6 @@ public class RentsRepositoryHibernate implements RentsRepository {
     @Override
     public boolean isProductAvailableNow(Integer id) {
         try {
-            entityManager.getTransaction().begin();
             String selectAvailableProductNowById = "select p from Product p where p.id = :id";
             var query = entityManager.createQuery(selectAvailableProductNowById,
                     Product.class);
@@ -89,12 +88,10 @@ public class RentsRepositoryHibernate implements RentsRepository {
             for (Rent rent : productRents) {
                 if (LocalDate.now().isAfter(rent.getReturnDate())) {
                     log.info("Product with id: {} is available now", id);
-                    entityManager.getTransaction().commit();
                     return true;
                 }
             }
             log.info("Product with id: {} is not available now", id);
-            entityManager.getTransaction().commit();
             return false;
         } catch (Exception e) {
             log.warn("Product with provided id: {} doesn't exist", id);
@@ -106,7 +103,6 @@ public class RentsRepositoryHibernate implements RentsRepository {
     @Override
     public boolean isProductAvailableAtGivenDate(Integer id, LocalDate date) {
         try {
-            entityManager.getTransaction().begin();
             String selectAvailableProductNowById = "select p from Product p where p.id = :id";
             var query = entityManager.createQuery(selectAvailableProductNowById,
                     Product.class);
@@ -121,7 +117,6 @@ public class RentsRepositoryHibernate implements RentsRepository {
                 }
             }
             log.info("Product with id: {} is not available at: {}", id, date);
-            entityManager.getTransaction().commit();
             return false;
         } catch (Exception e) {
             log.warn("Product with provided id: {} doesn't exist or format date: {} incorrect", id, date);
@@ -133,7 +128,6 @@ public class RentsRepositoryHibernate implements RentsRepository {
     public LocalDate firstAvailableDate(Integer id) {
         try {
             if (!isProductAvailableNow(id)) {
-                entityManager.getTransaction().begin();
                 String selectProduct = "select p from Product p where p.id = :id";
                 var query = entityManager.createQuery(selectProduct, Product.class);
                 query.setParameter("id", id);
@@ -145,7 +139,6 @@ public class RentsRepositoryHibernate implements RentsRepository {
                         .limit(1)
                         .toList();
                 log.info("Product with id: {} will be available at: {}", id, closestReturnDate.get(0).plusDays(1));
-                entityManager.getTransaction().commit();
                 return closestReturnDate.get(0).plusDays(1);
             } else {
                 log.info("Product with id: {} is available now", id);

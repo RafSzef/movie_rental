@@ -38,7 +38,8 @@ public class AdminPanelLogic {
         System.out.println("2. Manage products");
         System.out.println("3. Manage company branches");
         System.out.println("4. Manage Directors");
-        System.out.println("5. LogOut");
+        System.out.println("5. Manage Rents");
+        System.out.println("6. LogOut");
         System.out.println("<------------------------------------------->");
     }
 }

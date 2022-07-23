@@ -69,4 +69,20 @@ public class Client {
         return postalCode.matches("[0-9]{2}-{1}[0-9]{3}");
     }
 
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", postalCode='" + postalCode + '\'' +
+                ", address='" + address + '\'' +
+                ", login='" + login + '\'' +
+                ", admin=" + admin +
+                ", password='" + password + '\'' +
+                ", rents=" + rents +
+                '}';
+    }
 }

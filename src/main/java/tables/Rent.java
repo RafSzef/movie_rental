@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 
-
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -27,7 +26,8 @@ public class Rent {
         this.rentDate = rentDate;
         this.returnDate = returnDate;
     }
-   public Rent( Product product, Client client, LocalDate rentDate, LocalDate returnDate) {
+
+    public Rent(Product product, Client client, LocalDate rentDate, LocalDate returnDate) {
         this.product = product;
         this.client = client;
         this.rentDate = rentDate;
@@ -38,7 +38,7 @@ public class Rent {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
 
@@ -52,5 +52,15 @@ public class Rent {
     @Column(name = "returnDate")
     private LocalDate returnDate;
 
+    @Override
+    public String toString() {
+        return "Rent id:" + id +
+                ",\tclient id:\t" + client.getId() +
+                " full name\t" + client.getFirstName() +
+                " " + client.getLastName() +
+                ",\trent start date:\t" + rentDate +
+                ", return date: " + returnDate +
+                ",\tproduct = " + product;
+    }
 }
 

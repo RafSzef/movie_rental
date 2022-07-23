@@ -21,6 +21,8 @@ public class AdminPanelContext implements Context {
             case OPTION_4:
                 return new DirectorOpertaionsStrategy();
             case OPTION_5:
+                return new RentsOperationStrategy();
+            case OPTION_7:
                 return new LogOutStrategy();
             default: {
                 log.info("Wrong - enter command again");
